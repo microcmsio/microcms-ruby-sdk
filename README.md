@@ -52,7 +52,7 @@ puts MicroCMS.blog.create({
 })
 
 puts MicroCMS.blog.create({
-    id: "my-content-id"
+    id: "my-content-id",
     title: "Hello, microCMS!",
     contents: "Awesome contents...",
 })
