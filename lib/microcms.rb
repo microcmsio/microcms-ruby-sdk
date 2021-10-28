@@ -1,14 +1,15 @@
-require "microcms/version"
-require "net/http"
-require "uri"
-require "json"
+# frozen_string_literal: true
+
+require 'microcms/version'
+require 'net/http'
+require 'uri'
+require 'json'
 
 module MicroCMS
   class << self
-    attr_accessor :api_key
-    attr_accessor :service_domain
+    attr_accessor :api_key, :service_domain
 
-    def method_missing(name, *args, &block)
+    def method_missing(name, *_args)
       APIClient.new(@service_domain, name, @api_key)
     end
   end
@@ -22,99 +23,100 @@ module MicroCMS
 
     def list(option = {})
       send_http_request(
-        "GET",
+        'GET',
         nil,
         {
           draftKey: option[:draftKey],
           limit: option[:limit],
           offset: option[:offset],
-          orders: if option[:orders] then option[:orders].join(',') else nil end,
+          orders: option[:orders] ? option[:orders].join(',') : nil,
           q: option[:q],
-          fields: if option[:fields] then option[:fields].join(',') else nil end,
+          fields: option[:fields] ? option[:fields].join(',') : nil,
           filters: option[:filters],
-          depth: option[:depth],
-        }.select { |key, value| value }
+          depth: option[:depth]
+        }.select { |_key, value| value }
       )
     end
 
     def get(id, option = {})
       send_http_request(
-        "GET",
+        'GET',
         id,
         {
           draftKey: option[:draftKey],
-          fields: if option[:fields] then option[:fields].join(',') else nil end,
-          depth: option[:depth],
-        }.select { |key, value| value }
+          fields: option[:fields] ? option[:fields].join(',') : nil,
+          depth: option[:depth]
+        }.select { |_key, value| value }
       )
     end
 
     def create(option)
       if option[:id]
         send_http_request(
-          "PUT",
+          'PUT',
           option[:id],
           nil,
-          option.reject { |key, value| key == :id }
+          option.reject { |key, _value| key == :id }
         )
       else
         send_http_request(
-          "POST",
+          'POST',
           nil,
           nil,
-          option,
+          option
         )
       end
     end
 
     def update(option)
       send_http_request(
-        "PATCH",
+        'PATCH',
         option[:id],
         nil,
-        option.reject { |key, value| key == :id },
+        option.reject { |key, _value| key == :id }
       )
     end
 
     def delete(id)
-      send_http_request("DELETE", id)
+      send_http_request('DELETE', id)
     end
 
     private
-      def send_http_request(method = "GET", path = "", query = {}, body = nil)
-        origin = "https://#{@service_domain}.microcms.io"
-        path_with_prefix = "/api/v1/#{@api_name}/#{path}"
-        encoded_query =
-          if query
-            "?#{URI.encode_www_form(query)}"
-          else
-            ""
-          end
-        uri = URI.parse("#{origin}#{path_with_prefix}#{encoded_query}")
 
-        http = Net::HTTP.new(uri.host, uri.port)
-        http.use_ssl = true
-
-        request_class = {
-          GET: Net::HTTP::Get,
-          POST: Net::HTTP::Post,
-          PUT: Net::HTTP::Put,
-          PATCH: Net::HTTP::Patch,
-          DELETE: Net::HTTP::Delete,
-        }
-
-        req = request_class[method.to_sym].new(uri.request_uri)
-        req["X-MICROCMS-API-KEY"] = @api_key
-        if body
-          req["Content-Type"] = "application/json"
-          req.body = JSON.dump(body)
+    def send_http_request(method = 'GET', path = '', query = {}, body = nil)
+      origin = "https://#{@service_domain}.microcms.io"
+      path_with_prefix = "/api/v1/#{@api_name}/#{path}"
+      encoded_query =
+        if query
+          "?#{URI.encode_www_form(query)}"
+        else
+          ''
         end
+      uri = URI.parse("#{origin}#{path_with_prefix}#{encoded_query}")
 
-        res = http.request(req)
+      http = Net::HTTP.new(uri.host, uri.port)
+      http.use_ssl = true
 
-        raise "HTTP Errror: Status is #{res.code}, Body is #{res.body}" if res.code.to_i >= 400
+      request_class = {
+        GET: Net::HTTP::Get,
+        POST: Net::HTTP::Post,
+        PUT: Net::HTTP::Put,
+        PATCH: Net::HTTP::Patch,
+        DELETE: Net::HTTP::Delete
+      }
 
-        JSON.parse(res.body, object_class: OpenStruct) if res.header["Content-Type"].include?("application/json")
+      req = request_class[method.to_sym].new(uri.request_uri)
+      req['X-MICROCMS-API-KEY'] = @api_key
+      if body
+        req['Content-Type'] = 'application/json'
+        req.body = JSON.dump(body)
       end
+
+      res = http.request(req)
+
+      raise "HTTP Errror: Status is #{res.code}, Body is #{res.body}" if res.code.to_i >= 400
+
+      JSON.parse(res.body, object_class: OpenStruct) if res.header['Content-Type'].include?('application/json')
+    end
   end
 end
