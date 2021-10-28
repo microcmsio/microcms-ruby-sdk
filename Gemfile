@@ -8,3 +8,5 @@ gemspec
 gem 'rake', '~> 12.0'
 
 gem 'rubocop', require: false
+
+gem 'rspec', require: false
