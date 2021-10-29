@@ -7,7 +7,7 @@
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'microcms'
+gem 'microcms-ruby-sdk'
 ```
 
 And then execute:
@@ -21,6 +21,8 @@ Or install it yourself as:
 ## Usage
 
 ```rb
+require 'microcms'
+
 MicroCMS.service_domain = ENV['YOUR_DOMAIN']
 MicroCMS.api_key = ENV['YOUR_API_KEY']
 
