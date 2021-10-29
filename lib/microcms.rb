@@ -24,7 +24,7 @@ module MicroCMS
         endpoint,
         id,
         {
-          draftKey: option[:draftKey],
+          draftKey: option[:draft_key],
           fields: option[:fields] ? option[:fields].join(',') : nil,
           depth: option[:depth]
         }.select { |_key, value| value }
