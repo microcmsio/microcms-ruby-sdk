@@ -4,9 +4,22 @@ require 'microcms/version'
 require 'net/http'
 require 'uri'
 require 'json'
+require 'forwardable'
 
 # MicroCMS
 module MicroCMS
+  class << self
+    extend Forwardable
+
+    attr_accessor :api_key, :service_domain
+
+    delegate %i[list get create update delete] => :client
+
+    def client
+      Client.new(@service_domain, @api_key)
+    end
+  end
+
   # Client
   class Client
     def initialize(service_domain, api_key)

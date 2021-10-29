@@ -21,33 +21,35 @@ Or install it yourself as:
 ## Usage
 
 ```rb
-client = MicroCMS::Client.new(ENV["YOUR_DOMAIN"], ENV["YOUR_API_KEY"])
-endpoint = ENV["YOUR_ENDPOINT"]
+MicroCMS.service_domain = ENV['YOUR_DOMAIN']
+MicroCMS.api_key = ENV['YOUR_API_KEY']
 
-puts client.list(endpoint)
+endpoint = ENV['YOUR_ENDPOINT']
 
-puts client.list(endpoint, {
-  limit:  100,
-  offset: 1,
-  orders: ["updatedAt"],
-  q:      "Hello",
-  fields: ["id", "title"],
-  filters:"publishedAt[greater_than]2021-01-01",
-})
+puts MicroCMS.list(endpoint)
 
-puts client.get(endpoint, "ruby")
+puts MicroCMS.list(endpoint, {
+                     limit: 100,
+                     offset: 1,
+                     orders: ['updatedAt'],
+                     q: 'Hello',
+                     fields: %w[id title],
+                     filters: 'publishedAt[greater_than]2021-01-01'
+                   })
 
-puts client.get(endpoint, "ruby", { draft_key: "abcdef1234" })
+puts MicroCMS.get(endpoint, 'ruby')
 
-puts client.create(endpoint, { text: "Hello, microcms-ruby-sdk!" })
+puts MicroCMS.get(endpoint, 'ruby', { draft_key: 'abcdef1234' })
 
-puts client.create(endpoint, { id: "microcms-ruby-sdk", text: "Hello, microcms-ruby-sdk!" })
+puts MicroCMS.create(endpoint, { text: 'Hello, microcms-ruby-sdk!' })
 
-puts client.create(endpoint, { text: "Hello, microcms-ruby-sdk!" }, { status: "draft" })
+puts MicroCMS.create(endpoint, { id: 'microcms-ruby-sdk', text: 'Hello, microcms-ruby-sdk!' })
 
-puts client.update(endpoint, { id: "microcms-ruby-sdk", text: "Hello, microcms-ruby-sdk update method!" })
+puts MicroCMS.create(endpoint, { text: 'Hello, microcms-ruby-sdk!' }, { status: 'draft' })
 
-puts client.delete(endpoint, "microcms-ruby-sdk")
+puts MicroCMS.update(endpoint, { id: 'microcms-ruby-sdk', text: 'Hello, microcms-ruby-sdk update method!' })
+
+MicroCMS.delete(endpoint, 'microcms-ruby-sdk')
 ```
 
 ## Development
