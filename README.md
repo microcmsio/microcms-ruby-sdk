@@ -21,66 +21,33 @@ Or install it yourself as:
 ## Usage
 
 ```rb
-MicroCMS.service_domain = "XXXX" # YOUR_DOMAIN is the XXXX part of XXXX.microcms.io
-MicroCMS.api_key = "XXX"
+client = MicroCMS::Client.new(ENV["YOUR_DOMAIN"], ENV["YOUR_API_KEY"])
+endpoint = ENV["YOUR_ENDPOINT"]
 
-puts MicroCMS.blog.list
-puts MicroCMS.tag.list
+puts client.list(endpoint)
 
-puts MicroCMS.blog.list({
-    draftKey: "foo",
-    limit: 10,
-    offset: 1,
-    orders: ["createdAt", "-updatedAt"],
-    q: "Ruby",
-    fields: ["id", "title"],
-    filters: "title[contains]microCMS",
-    depth: 1,
+puts client.list(endpoint, {
+  limit:  100,
+  offset: 1,
+  orders: ["updatedAt"],
+  q:      "Hello",
+  fields: ["id", "title"],
+  filters:"publishedAt[greater_than]2021-01-01",
 })
 
-puts MicroCMS.blog.get("my-content-id")
+puts client.get(endpoint, "ruby")
 
-puts MicroCMS.blog.get("my-content-id", {
-    draftKey: "foo",
-    fields: ["id", "title"],
-    depth: 1,
-})
+puts client.get(endpoint, "ruby", { draft_key: "abcdef1234" })
 
-puts MicroCMS.blog.create({
-    title: "Hello, microCMS!",
-    contents: "Awesome contents...",
-})
+puts client.create(endpoint, { text: "Hello, microcms-ruby-sdk!" })
 
-puts MicroCMS.blog.create({
-    id: "my-content-id",
-    title: "Hello, microCMS!",
-    contents: "Awesome contents...",
-})
+puts client.create(endpoint, { id: "microcms-ruby-sdk", text: "Hello, microcms-ruby-sdk!" })
 
-puts MicroCMS.blog.update({
-    id: "my-content-id",
-    title: "Hello, microCMS Ruby SDK!",
-})
+puts client.create(endpoint, { text: "Hello, microcms-ruby-sdk!" }, { status: "draft" })
 
-puts MicroCMS.blog.delete("my-content-id")
-```
+puts client.update(endpoint, { id: "microcms-ruby-sdk", text: "Hello, microcms-ruby-sdk update method!" })
 
-You can use multiple instance.
-
-```rb
-client1 = MicroCMS::APIClient.new(
-    "your-service-domain-1",
-    "api-name-1",
-    "api-key-1"
-)
-client2 = MicroCMS::APIClient.new(
-    "your-service-domain-2",
-    "api-name-2",
-    "api-key-2"
-)
-
-puts client1.list
-puts client2.list
+puts client.delete(endpoint, "microcms-ruby-sdk")
 ```
 
 ## Development
