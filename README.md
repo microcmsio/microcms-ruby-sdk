@@ -16,7 +16,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install microcms
+    $ gem install microcms-ruby-sdk
 
 ## Usage
 

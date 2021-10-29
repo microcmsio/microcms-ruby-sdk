@@ -3,7 +3,7 @@
 require_relative 'lib/microcms/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = 'microcms'
+  spec.name          = 'microcms-ruby-sdk'
   spec.version       = MicroCMS::VERSION
   spec.authors       = ['microCMS']
 
