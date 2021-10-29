@@ -31,20 +31,20 @@ module MicroCMS
       )
     end
 
-    def create(endpoint, option)
-      if option[:id]
-        put(endpoint, option)
+    def create(endpoint, content, option = {})
+      if content[:id]
+        put(endpoint, content, option)
       else
-        post(endpoint, option)
+        post(endpoint, content, option)
       end
     end
 
-    def update(endpoint, option)
-      body = option.reject { |key, _value| key == :id }
-      send_http_request('PATCH', endpoint, option[:id], nil, body)
+    def update(endpoint, content)
+      body = content.reject { |key, _value| key == :id }
+      send_http_request('PATCH', endpoint, content[:id], nil, body)
     end
 
-    def delete(endpoint, _id)
+    def delete(endpoint, id)
       send_http_request('DELETE', endpoint, id)
     end
 
@@ -63,36 +63,38 @@ module MicroCMS
       }.select { |_key, value| value }
     end
 
-    def put(endpoint, option)
-      body = option.reject { |key, _value| key == :id }
-      send_http_request('PUT', endpoint, option[:id], nil, body)
+    def put(endpoint, content, option = {})
+      body = content.reject { |key, _value| key == :id }
+      send_http_request('PUT', endpoint, content[:id], option, body)
     end
 
-    def post(endpoint, option)
-      send_http_request('POST', endpoint, nil, nil, option)
+    def post(endpoint, content, option = {})
+      send_http_request('POST', endpoint, nil, option, content)
     end
 
-    def send_http_request(method, _endpoint, path, query = {}, _body = nil)
-      uri = build_uri(path, query)
+    def send_http_request(method, endpoint, path, query = nil, body = nil)
+      uri = build_uri(endpoint, path, query)
       http = build_http(uri)
-      req = build_request(method, uri)
+      req = build_request(method, uri, body)
       res = http.request(req)
 
-      raise "HTTP Errror: Status is #{res.code}, Body is #{res.body}" if res.code.to_i >= 400
+      raise "microCMS response error: Status is #{res.code}, Body is #{res.body}" if res.code.to_i >= 400
 
       JSON.parse(res.body, object_class: OpenStruct) if res.header['Content-Type'].include?('application/json')
     end
 
-    @request_class = {
-      GET: Net::HTTP::Get,
-      POST: Net::HTTP::Post,
-      PUT: Net::HTTP::Put,
-      PATCH: Net::HTTP::Patch,
-      DELETE: Net::HTTP::Delete
-    }
+    def get_request_class(method)
+      {
+        GET: Net::HTTP::Get,
+        POST: Net::HTTP::Post,
+        PUT: Net::HTTP::Put,
+        PATCH: Net::HTTP::Patch,
+        DELETE: Net::HTTP::Delete
+      }[method]
+    end
 
-    def build_request(method, uri)
-      req = @request_class[method.to_sym].new(uri.request_uri)
+    def build_request(method, uri, body)
+      req = get_request_class(method.to_sym).new(uri.request_uri)
       req['X-MICROCMS-API-KEY'] = @api_key
       if body
         req['Content-Type'] = 'application/json'
@@ -102,17 +104,17 @@ module MicroCMS
       req
     end
 
-    def build_uri(path, query)
+    def build_uri(endpoint, path, query)
       origin = "https://#{@service_domain}.microcms.io"
-      path_with_prefix = "/api/v1/#{@api_name}/#{path}"
+      path_with_id = path ? "/api/v1/#{endpoint}/#{path}" : "/api/v1/#{endpoint}"
       encoded_query =
-        if query
-          "?#{URI.encode_www_form(query)}"
-        else
+        if !query || query.size.zero?
           ''
+        else
+          "?#{URI.encode_www_form(query)}"
         end
 
-      URI.parse("#{origin}#{path_with_prefix}#{encoded_query}")
+      URI.parse("#{origin}#{path_with_id}#{encoded_query}")
     end
 
     def build_http(uri)
