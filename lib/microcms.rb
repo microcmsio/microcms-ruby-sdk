@@ -28,7 +28,12 @@ module MicroCMS
     end
 
     def list(endpoint, option = {})
-      send_http_request('GET', endpoint, nil, build_query(option))
+      list = send_http_request('GET', endpoint, nil, build_query(option))
+      if list[:totalCount]
+        list[:total_count] = list[:totalCount]
+        list.delete_field(:totalCount)
+      end
+      list
     end
 
     def get(endpoint, id = '', option = {})
