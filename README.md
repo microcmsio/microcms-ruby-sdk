@@ -2,6 +2,10 @@
 
 [microCMS](https://document.microcms.io/manual/api-request) Ruby SDK.
 
+## Tutorial
+
+See [official tutorial](https://document.microcms.io/tutorial/ruby/ruby-top).
+
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -20,38 +24,124 @@ Or install it yourself as:
 
 ## Usage
 
+### Import
+
 ```rb
 require 'microcms'
+```
 
-MicroCMS.service_domain = ENV['YOUR_DOMAIN']
-MicroCMS.api_key = ENV['YOUR_API_KEY']
+### Create client object
 
-endpoint = ENV['YOUR_ENDPOINT']
+```rb
+MicroCMS.service_domain = 'YOUR_DOMAIN'
+MicroCMS.api_key = 'YOUR_API_KEY'
+```
 
-puts MicroCMS.list(endpoint)
+### Get content list
 
-puts MicroCMS.list(endpoint, {
-                     limit: 100,
-                     offset: 1,
-                     orders: ['updatedAt'],
-                     q: 'Hello',
-                     fields: %w[id title],
-                     filters: 'publishedAt[greater_than]2021-01-01'
-                   })
+```rb
+puts MicroCMS.list('endpoint')
+```
 
-puts MicroCMS.get(endpoint, 'ruby')
+### Get content list with parameters
 
-puts MicroCMS.get(endpoint, 'ruby', { draft_key: 'abcdef1234' })
+```rb
+puts MicroCMS.list(
+    'endpoint',
+    {
+        drarf_key: "abcd",
+        limit: 100,
+        offset: 1,
+        orders: ['updatedAt'],
+        q: 'Hello',
+        fields: %w[id title],
+        ids: ['foo'],
+        filters: 'publishedAt[greater_than]2021-01-01',
+        depth: 1,
+    },
+)
+```
 
-puts MicroCMS.create(endpoint, { text: 'Hello, microcms-ruby-sdk!' })
+### Get single content
 
-puts MicroCMS.create(endpoint, { id: 'microcms-ruby-sdk', text: 'Hello, microcms-ruby-sdk!' })
+```rb
+puts MicroCMS.get('endpoint', 'ruby')
+```
 
-puts MicroCMS.create(endpoint, { text: 'Hello, microcms-ruby-sdk!' }, { status: 'draft' })
+### Get single content with parameters
 
-puts MicroCMS.update(endpoint, { id: 'microcms-ruby-sdk', text: 'Hello, microcms-ruby-sdk update method!' })
+```rb
+puts MicroCMS.get(
+    'endpoint',
+    'ruby',
+    {
+        draft_key: 'abcdef1234',
+        fields: %w[title publishedAt],
+        depth: 1,
+    },
+)
+```
 
-MicroCMS.delete(endpoint, 'microcms-ruby-sdk')
+### Get object form content
+
+```rb
+puts MicroCMS.get('endpoint')
+```
+
+### Create content
+
+```rb
+puts MicroCMS.create('endpoint', { text: 'Hello, microcms-ruby-sdk!' })
+```
+
+### Create content with specified ID
+
+```rb
+puts MicroCMS.create(
+    'endpoint',
+    {
+        id: 'my-content-id',
+        text: 'Hello, microcms-ruby-sdk!',
+    },
+)
+```
+
+### Create draft content
+
+```rb
+puts MicroCMS.create(
+    'endpoint',
+    {
+        id: 'my-content-id',
+        text: 'Hello, microcms-ruby-sdk!',
+    },
+    { status: 'draft' },
+)
+```
+
+### Update content
+
+```rb
+
+puts MicroCMS.update(
+    'endpoint',
+    {
+        id: 'microcms-ruby-sdk',
+        text: 'Hello, microcms-ruby-sdk update method!',
+    },
+)
+```
+
+### Update object form content
+
+```rb
+puts MicroCMS.update('endpoint', { text: 'Hello, microcms-ruby-sdk update method!' })
+```
+
+### Delete content
+
+```rb
+MicroCMS.delete('endpoint', 'microcms-ruby-sdk')
 ```
 
 ## Development
