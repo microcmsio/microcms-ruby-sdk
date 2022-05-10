@@ -7,7 +7,7 @@ RSpec::Matchers.define :request do |method, path, headers, body|
     hash = {
       method: [method, actual.method],
       path: [path, actual.path],
-      headers: [headers, headers.map { |k, _v| [k, actual[k]] }.to_h],
+      headers: [headers, headers.to_h { |k, _v| [k, actual[k]] }],
       body: [body, actual.body]
     }
     hash.all? { |_k, v| v[0] == v[1] }
