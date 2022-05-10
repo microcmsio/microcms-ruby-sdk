@@ -57,6 +57,14 @@ describe MicroCMS do
     response
   end
 
+  let(:mock_client_error_response) do
+    instance_double(Net::HTTPClientError, code: 400, body: '{"message":"client error"}')
+  end
+
+  let(:mock_server_error_response) do
+    instance_double(Net::HTTPClientError, code: 500, body: '{"message":"server error"}')
+  end
+
   context 'When send GET request without content id' do
     it 'should return contents' do
       expect_any_instance_of(Net::HTTP).to receive(:request).with(req_matcher) { mock_response }
@@ -165,6 +173,35 @@ describe MicroCMS do
       expect_any_instance_of(Net::HTTP).to receive(:request).with(req_matcher) { mock_response }
 
       client.delete('endpoint', 'bar')
+    end
+  end
+
+  context 'When api returns a client error' do
+    it 'raises MicroCMS::APIError' do
+      expect_any_instance_of(Net::HTTP).to receive(:request).and_return(mock_client_error_response)
+      expect { client.create('endpoint', { id: 'bar', baz: 'quux' }) }.to(
+        raise_error(an_instance_of(::MicroCMS::APIError)
+          .and(have_attributes({
+                                 status_code: 400,
+                                 message: 'client error',
+                                 body: { 'message' => 'client error' }
+                               })))
+      )
+    end
+  end
+
+  context 'When api returns a server error' do
+    it 'raises MicroCMS::APIError' do
+      expect_any_instance_of(Net::HTTP).to receive(:request).and_return(mock_server_error_response)
+
+      expect { client.create('endpoint', { id: 'bar', baz: 'quux' }) }.to(
+        raise_error(an_instance_of(::MicroCMS::APIError)
+          .and(have_attributes({
+                                 status_code: 500,
+                                 message: 'server error',
+                                 body: { 'message' => 'server error' }
+                               })))
+      )
     end
   end
 end
