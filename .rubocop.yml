@@ -5,3 +5,7 @@ AllCops:
 Metrics/BlockLength:
   Exclude:
     - 'spec/**/*'
+
+Style/OpenStructUse:
+  Exclude:
+    - 'spec/**/*'

@@ -96,9 +96,9 @@ module MicroCMS
       req = build_request(method, uri, body)
       res = http.request(req)
 
-      raise "microCMS response error: Status is #{res.code}, Body is #{res.body}" if res.code.to_i >= 400
+      raise APIError.new(status_code: res.code.to_i, body: res.body) if res.code.to_i >= 400
 
-      JSON.parse(res.body, object_class: OpenStruct) if res.header['Content-Type'].include?('application/json')
+      JSON.parse(res.body, object_class: OpenStruct) if res.header['Content-Type'].include?('application/json') # rubocop:disable Style/OpenStructUse
     end
 
     def get_request_class(method)
@@ -140,6 +140,31 @@ module MicroCMS
       http.use_ssl = true
 
       http
+    end
+  end
+
+  # APIError
+  class APIError < StandardError
+    attr_accessor :status_code, :body
+
+    def initialize(status_code:, body:)
+      @status_code = status_code
+      @body = parse_body(body)
+
+      message = @body['message'] || 'Unknown error occured.'
+      super(message)
+    end
+
+    def inspect
+      "#<#{self.class.name} @status_code=#{status_code}, @body=#{body.inspect} @message=#{message.inspect}>"
+    end
+
+    private
+
+    def parse_body(body)
+      JSON.parse(body)
+    rescue JSON::ParserError
+      {}
     end
   end
 end

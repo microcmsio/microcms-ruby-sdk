@@ -7,7 +7,7 @@ RSpec::Matchers.define :request do |method, path, headers, body|
     hash = {
       method: [method, actual.method],
       path: [path, actual.path],
-      headers: [headers, headers.map { |k, _v| [k, actual[k]] }.to_h],
+      headers: [headers, headers.to_h { |k, _v| [k, actual[k]] }],
       body: [body, actual.body]
     }
     hash.all? { |_k, v| v[0] == v[1] }
@@ -55,6 +55,14 @@ describe MicroCMS do
     response = Net::HTTPSuccess.new(1.0, '200', 'OK')
     mock_res_headers.each { |k, v| response[k] = v }
     response
+  end
+
+  let(:mock_client_error_response) do
+    instance_double(Net::HTTPClientError, code: 400, body: '{"message":"client error"}')
+  end
+
+  let(:mock_server_error_response) do
+    instance_double(Net::HTTPClientError, code: 500, body: '{"message":"server error"}')
   end
 
   context 'When send GET request without content id' do
@@ -165,6 +173,35 @@ describe MicroCMS do
       expect_any_instance_of(Net::HTTP).to receive(:request).with(req_matcher) { mock_response }
 
       client.delete('endpoint', 'bar')
+    end
+  end
+
+  context 'When api returns a client error' do
+    it 'raises MicroCMS::APIError' do
+      expect_any_instance_of(Net::HTTP).to receive(:request).and_return(mock_client_error_response)
+      expect { client.create('endpoint', { id: 'bar', baz: 'quux' }) }.to(
+        raise_error(an_instance_of(::MicroCMS::APIError)
+          .and(have_attributes({
+                                 status_code: 400,
+                                 message: 'client error',
+                                 body: { 'message' => 'client error' }
+                               })))
+      )
+    end
+  end
+
+  context 'When api returns a server error' do
+    it 'raises MicroCMS::APIError' do
+      expect_any_instance_of(Net::HTTP).to receive(:request).and_return(mock_server_error_response)
+
+      expect { client.create('endpoint', { id: 'bar', baz: 'quux' }) }.to(
+        raise_error(an_instance_of(::MicroCMS::APIError)
+          .and(have_attributes({
+                                 status_code: 500,
+                                 message: 'server error',
+                                 body: { 'message' => 'server error' }
+                               })))
+      )
     end
   end
 end

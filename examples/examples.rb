@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-MicroCMS.service_domain = ENV['YOUR_DOMAIN']
-MicroCMS.api_key = ENV['YOUR_API_KEY']
+MicroCMS.service_domain = ENV.fetch('YOUR_DOMAIN', nil)
+MicroCMS.api_key = ENV.fetch('YOUR_API_KEY', nil)
 
-endpoint = ENV['YOUR_ENDPOINT']
+endpoint = ENV.fetch('YOUR_ENDPOINT', nil)
 
 puts MicroCMS.list(endpoint)
 
