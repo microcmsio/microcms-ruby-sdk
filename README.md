@@ -49,7 +49,7 @@ puts MicroCMS.list('endpoint')
 puts MicroCMS.list(
     'endpoint',
     {
-        drarf_key: "abcd",
+        draft_key: "abcd",
         limit: 100,
         offset: 1,
         orders: ['updatedAt'],
@@ -152,4 +152,4 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/microcms.
+Bug reports and pull requests are welcome on GitHub at <https://github.com/microcmsio/microcms-ruby-sdk>.
