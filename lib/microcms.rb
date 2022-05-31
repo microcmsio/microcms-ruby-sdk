@@ -77,7 +77,8 @@ module MicroCMS
         q: option[:q],
         fields: option[:fields] ? option[:fields].join(',') : nil,
         filters: option[:filters],
-        depth: option[:depth]
+        depth: option[:depth],
+        ids: option[:ids] ? option[:ids].join(',') : nil
       }.select { |_key, value| value }
     end
 
