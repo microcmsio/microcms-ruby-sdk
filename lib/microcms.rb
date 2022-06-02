@@ -20,8 +20,67 @@ module MicroCMS
     end
   end
 
+  # HttpUtil
+  module HttpUtil
+    def send_http_request(method, endpoint, path, query = nil, body = nil)
+      uri = build_uri(endpoint, path, query)
+      http = build_http(uri)
+      req = build_request(method, uri, body)
+      res = http.request(req)
+
+      raise APIError.new(status_code: res.code.to_i, body: res.body) if res.code.to_i >= 400
+
+      JSON.parse(res.body, object_class: OpenStruct) if res.header['Content-Type'].include?('application/json') # rubocop:disable Style/OpenStructUse
+    end
+
+    private
+
+    def get_request_class(method)
+      {
+        GET: Net::HTTP::Get,
+        POST: Net::HTTP::Post,
+        PUT: Net::HTTP::Put,
+        PATCH: Net::HTTP::Patch,
+        DELETE: Net::HTTP::Delete
+      }[method]
+    end
+
+    def build_request(method, uri, body)
+      req = get_request_class(method.to_sym).new(uri.request_uri)
+      req['X-MICROCMS-API-KEY'] = @api_key
+      if body
+        req['Content-Type'] = 'application/json'
+        req.body = JSON.dump(body)
+      end
+
+      req
+    end
+
+    def build_uri(endpoint, path, query)
+      origin = "https://#{@service_domain}.microcms.io"
+      path_with_id = path ? "/api/v1/#{endpoint}/#{path}" : "/api/v1/#{endpoint}"
+      encoded_query =
+        if !query || query.size.zero?
+          ''
+        else
+          "?#{URI.encode_www_form(query)}"
+        end
+
+      URI.parse("#{origin}#{path_with_id}#{encoded_query}")
+    end
+
+    def build_http(uri)
+      http = Net::HTTP.new(uri.host, uri.port)
+      http.use_ssl = true
+
+      http
+    end
+  end
+
   # Client
   class Client
+    include HttpUtil
+
     def initialize(service_domain, api_key)
       @service_domain = service_domain
       @api_key = api_key
@@ -68,6 +127,7 @@ module MicroCMS
 
     private
 
+    # rubocop:disable Style/MethodLength
     def build_query(option)
       {
         draftKey: option[:draftKey],
@@ -81,6 +141,7 @@ module MicroCMS
         ids: option[:ids] ? option[:ids].join(',') : nil
       }.select { |_key, value| value }
     end
+    # rubocop:enable Style/MethodLength
 
     def put(endpoint, content, option = {})
       body = content.reject { |key, _value| key == :id }
@@ -89,58 +150,6 @@ module MicroCMS
 
     def post(endpoint, content, option = {})
       send_http_request('POST', endpoint, nil, option, content)
-    end
-
-    def send_http_request(method, endpoint, path, query = nil, body = nil)
-      uri = build_uri(endpoint, path, query)
-      http = build_http(uri)
-      req = build_request(method, uri, body)
-      res = http.request(req)
-
-      raise APIError.new(status_code: res.code.to_i, body: res.body) if res.code.to_i >= 400
-
-      JSON.parse(res.body, object_class: OpenStruct) if res.header['Content-Type'].include?('application/json') # rubocop:disable Style/OpenStructUse
-    end
-
-    def get_request_class(method)
-      {
-        GET: Net::HTTP::Get,
-        POST: Net::HTTP::Post,
-        PUT: Net::HTTP::Put,
-        PATCH: Net::HTTP::Patch,
-        DELETE: Net::HTTP::Delete
-      }[method]
-    end
-
-    def build_request(method, uri, body)
-      req = get_request_class(method.to_sym).new(uri.request_uri)
-      req['X-MICROCMS-API-KEY'] = @api_key
-      if body
-        req['Content-Type'] = 'application/json'
-        req.body = JSON.dump(body)
-      end
-
-      req
-    end
-
-    def build_uri(endpoint, path, query)
-      origin = "https://#{@service_domain}.microcms.io"
-      path_with_id = path ? "/api/v1/#{endpoint}/#{path}" : "/api/v1/#{endpoint}"
-      encoded_query =
-        if !query || query.size.zero?
-          ''
-        else
-          "?#{URI.encode_www_form(query)}"
-        end
-
-      URI.parse("#{origin}#{path_with_id}#{encoded_query}")
-    end
-
-    def build_http(uri)
-      http = Net::HTTP.new(uri.host, uri.port)
-      http.use_ssl = true
-
-      http
     end
   end
 
