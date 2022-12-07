@@ -37,6 +37,8 @@ MicroCMS.service_domain = 'YOUR_DOMAIN'
 MicroCMS.api_key = 'YOUR_API_KEY'
 ```
 
+Note that the `YOUR_DOMAIN` is the subdomain name of your service (not the FQDN).
+
 ### Get content list
 
 ```rb
