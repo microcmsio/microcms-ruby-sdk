@@ -161,7 +161,7 @@ module MicroCMS
       @status_code = status_code
       @body = parse_body(body)
 
-      message = @body['message'] || 'Unknown error occured.'
+      message = @body['message'] || 'Unknown error occurred.'
       super(message)
     end
 
