@@ -9,3 +9,13 @@ Metrics/BlockLength:
 Style/OpenStructUse:
   Exclude:
     - 'spec/**/*'
+
+Style/RedundantConstantBase:
+  Exclude:
+    - 'spec/**/*'
+
+Style/ZeroLengthPredicate:
+  Enabled: false
+
+Style/SafeNavigation:
+  Enabled: false

@@ -1,0 +1,14 @@
+{
+  "name": "microcms-ruby-sdk",
+  "image": "ghcr.io/rails/devcontainer/images/ruby:4.0.5",
+  "postCreateCommand": "bin/setup",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "Shopify.ruby-lsp",
+        "rebornix.Ruby"
+      ]
+    }
+  },
+  "remoteUser": "vscode"
+}
