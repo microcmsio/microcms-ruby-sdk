@@ -18,10 +18,9 @@ Gem::Specification.new do |spec|
 
   spec.metadata['rubygems_mfa_required'] = 'true'
 
-  # Specify which files should be added to the gem when it is released.
-  # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
-  spec.files = Dir.chdir(File.expand_path(__dir__)) do
-    `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
+  # `ruby -e "puts Gem::Specification.load('microcms.gemspec').files.sort"` で確認可能
+  spec.files = Dir.chdir(__dir__) do
+    `git ls-files -z lib LICENSE README.md microcms.gemspec`.split("\x0").reject(&:empty?)
   end
   spec.bindir        = 'exe'
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
