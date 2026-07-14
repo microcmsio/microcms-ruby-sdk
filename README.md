@@ -1,51 +1,57 @@
 # microCMS Ruby SDK
 
-[microCMS](https://document.microcms.io/manual/api-request) Ruby SDK.
+[microCMS](https://document.microcms.io/) のRuby SDKです。
 
-## Tutorial
+## 保守方針
 
-See [official tutorial](https://document.microcms.io/tutorial/ruby/ruby-top).
+このSDKの現在の保守レベルは `Maintenance` です。
 
-## Installation
+詳細は[SDKの保守方針](https://document.microcms.io/manual/limitations#hc2b0bc6659)をご覧ください。
 
-Add this line to your application's Gemfile:
+## チュートリアル
+
+[公式チュートリアル](https://document.microcms.io/tutorial/ruby/ruby-top)をご覧ください。
+
+## インストール
+
+アプリケーションのGemfileに以下を追加します。
 
 ```ruby
 gem 'microcms-ruby-sdk'
 ```
 
-And then execute:
+その後、以下を実行します。
 
     $ bundle install
 
-Or install it yourself as:
+または、以下のコマンドで直接インストールできます。
 
     $ gem install microcms-ruby-sdk
 
-## Usage
+## 使い方
 
-### Import
+### インポート
 
 ```rb
 require 'microcms'
 ```
 
-### Create client object
+### クライアントオブジェクトの作成
 
 ```rb
 MicroCMS.service_domain = 'YOUR_DOMAIN'
 MicroCMS.api_key = 'YOUR_API_KEY'
 ```
 
-Note that the `YOUR_DOMAIN` is the subdomain name of your service (not the FQDN).
+`YOUR_DOMAIN` にはサービスのサブドメイン名（`XXXX.microcms.io` の `XXXX` の部分）を指定してください。FQDNではありません。
 
-### Get content list
+### コンテンツ一覧の取得
 
 ```rb
 puts MicroCMS.list('endpoint')
 ```
 
-### Get content list with parameters
+### パラメータを指定したコンテンツ一覧の取得
 
 ```rb
 puts MicroCMS.list(
@@ -55,7 +61,7 @@ puts MicroCMS.list(
         limit: 100,
         offset: 1,
         orders: ['updatedAt'],
-        q: 'Hello',
+        q: 'こんにちは',
         fields: %w[id title],
         ids: ['foo'],
         filters: 'publishedAt[greater_than]2021-01-01',
@@ -64,13 +70,13 @@ puts MicroCMS.list(
 )
 ```
 
-### Get single content
+### 単一コンテンツの取得
 
 ```rb
 puts MicroCMS.get('endpoint', 'ruby')
 ```
 
-### Get single content with parameters
+### パラメータを指定した単一コンテンツの取得
 
 ```rb
 puts MicroCMS.get(
@@ -84,74 +90,73 @@ puts MicroCMS.get(
 )
 ```
 
-### Get object form content
+### オブジェクト形式のコンテンツの取得
 
 ```rb
 puts MicroCMS.get('endpoint')
 ```
 
-### Create content
+### コンテンツの作成
 
 ```rb
-puts MicroCMS.create('endpoint', { text: 'Hello, microcms-ruby-sdk!' })
+puts MicroCMS.create('endpoint', { text: 'こんにちは、microcms-ruby-sdk！' })
 ```
 
-### Create content with specified ID
+### IDを指定したコンテンツの作成
 
 ```rb
 puts MicroCMS.create(
     'endpoint',
     {
         id: 'my-content-id',
-        text: 'Hello, microcms-ruby-sdk!',
+        text: 'こんにちは、microcms-ruby-sdk！',
     },
 )
 ```
 
-### Create draft content
+### 下書きコンテンツの作成
 
 ```rb
 puts MicroCMS.create(
     'endpoint',
     {
         id: 'my-content-id',
-        text: 'Hello, microcms-ruby-sdk!',
+        text: 'こんにちは、microcms-ruby-sdk！',
     },
     { status: 'draft' },
 )
 ```
 
-### Update content
+### コンテンツの更新
 
 ```rb
-
 puts MicroCMS.update(
     'endpoint',
     {
         id: 'microcms-ruby-sdk',
-        text: 'Hello, microcms-ruby-sdk update method!',
+        text: 'こんにちは、microcms-ruby-sdkのupdateメソッド！',
     },
 )
 ```
 
-### Update object form content
+### オブジェクト形式のコンテンツの更新
 
 ```rb
-puts MicroCMS.update('endpoint', { text: 'Hello, microcms-ruby-sdk update method!' })
+puts MicroCMS.update('endpoint', { text: 'こんにちは、microcms-ruby-sdkのupdateメソッド！' })
 ```
 
-### Delete content
+### コンテンツの削除
 
 ```rb
 MicroCMS.delete('endpoint', 'microcms-ruby-sdk')
 ```
 
-## Development
+## 開発
 
-After checking out the repo, run `bin/setup` to install dependencies. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+リポジトリをチェックアウトした後、`bin/setup` を実行して依存関係をインストールしてください。`bin/console` を実行すると、対話形式で動作を確認できます。
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+このgemをローカル環境にインストールするには、`bundle exec rake install` を実行してください。新しいバージョンをリリースするには、`version.rb` のバージョン番号を更新してから `bundle exec rake release` を実行します。このコマンドはバージョンのgitタグを作成し、gitのコミットとタグをpushした後、`.gem` ファイルを[rubygems.org](https://rubygems.org)にpushします。
 
-## Contributing
+## コントリビュート
 
-Bug reports and pull requests are welcome on GitHub at <https://github.com/microcmsio/microcms-ruby-sdk>.
+バグ報告やプルリクエストは、[GitHub](https://github.com/microcmsio/microcms-ruby-sdk)で受け付けています。
