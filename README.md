@@ -1,6 +1,6 @@
 # microCMS Ruby SDK
 
-[microCMS](https://document.microcms.io/manual/api-request) のRuby SDKです。
+[microCMS](https://document.microcms.io/) のRuby SDKです。
 
 ## 保守方針
 
