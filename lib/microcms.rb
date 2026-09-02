@@ -128,7 +128,7 @@ module MicroCMS
 
     private
 
-    # rubocop:disable Style/MethodLength
+    # rubocop:disable-next Metrics/MethodLength
     def build_query(option)
       {
         draftKey: option[:draftKey],
@@ -142,7 +142,6 @@ module MicroCMS
         ids: option[:ids] ? option[:ids].join(',') : nil
       }.select { |_key, value| value }
     end
-    # rubocop:enable Style/MethodLength
 
     def put(endpoint, content, option = {})
       body = content.reject { |key, _value| key == :id }
