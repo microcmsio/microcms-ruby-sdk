@@ -7,6 +7,6 @@ gemspec
 
 gem 'rake', '~> 12.0'
 
-gem 'rubocop', require: false
+gem 'rubocop', '~> 1.81', require: false
 
-gem 'rspec', require: false
+gem 'rspec', '~> 3.13', require: false
