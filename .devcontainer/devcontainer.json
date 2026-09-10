@@ -1,6 +1,6 @@
 {
   "name": "microcms-ruby-sdk",
-  "image": "ghcr.io/rails/devcontainer/images/ruby:4.0.5",
+  "image": "ghcr.io/rails/devcontainer/images/ruby:4.0.6",
   "postCreateCommand": "bin/setup",
   "customizations": {
     "vscode": {
